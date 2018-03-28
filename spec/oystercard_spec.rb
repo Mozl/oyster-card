@@ -2,7 +2,11 @@ require "oystercard"
 
 describe Oystercard do
   subject(:oystercard) { described_class.new }
-  let(:station) { double :station  }
+  let(:station) { double :entry_station  }
+  let(:exit_station) { double :exit_station }
+  let(:journey) { {entry_station: station, exit_station: exit_station} }
+
+
   before do
     oystercard.top_up(10)
   end
@@ -32,19 +36,26 @@ describe Oystercard do
 
   describe "#touch_out" do
     it "should change journey status to false when touching out" do
-      oystercard.touch_out
+      oystercard.touch_out(exit_station)
       expect(oystercard.in_journey?).not_to be
     end
 
     it 'should deduct £1 from the card when you touch out' do
       oystercard.touch_in(station)
-      expect {oystercard.touch_out}.to change{oystercard.balance}.by(-1)
+      expect {oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by(-1)
     end
 
     it "forgets entry_station on touch out" do
       oystercard.touch_in(station)
-      oystercard.touch_out
+      oystercard.touch_out(exit_station)
       expect(oystercard.entry_station).to eq nil
+    end
+
+    it 'remembers the journey' do
+      oystercard.touch_in(station)
+      oystercard.touch_out(exit_station)
+      expect(oystercard.journeys).to include journey
+      #expect(oystercard.journeys).to include(station => exit_station)
     end
   end
 
