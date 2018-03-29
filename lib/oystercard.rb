@@ -3,10 +3,13 @@ class Oystercard
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
   FARE = 1
+  DEFAULT_BALANCE = 0
+  TOP_UP_AMOUNT = 10
+
   attr_accessor :balance
   attr_reader   :entry_station, :exit_station, :journeys
 
-  def initialize(balance = 0)
+  def initialize(balance = DEFAULT_BALANCE)
     @balance = balance
     @journeys = []
   end
@@ -20,9 +23,9 @@ class Oystercard
     true unless @entry_station.nil?
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     too_low_balance_error if balance_too_low?
-    @entry_station = station
+    @entry_station = entry_station
     @in_journey = true
   end
 
@@ -30,7 +33,7 @@ class Oystercard
     @in_journey = false
     deduct(FARE)
     @exit_station = exit_station
-    journey = { :entry_station => entry_station, :exit_station => exit_station }
+    journey = { entry_station => exit_station }
     @journeys << journey
     @entry_station = nil
   end
@@ -38,7 +41,7 @@ class Oystercard
   private
 
   def too_high_balance_error
-    raise "You can not have more than 90 on your card"
+    raise "You can not have more than #{MAXIMUM_BALANCE} on your card"
   end
 
   def balance_too_high(top_up_amount)
