@@ -1,3 +1,3 @@
 # Oyster Card
 
-![Alt](../draw.io.wiki/images/test_diagram.png)
+![Alt](../draw.io.wiki/images/card.png)
